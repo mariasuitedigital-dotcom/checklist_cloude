@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configura Claude — Guía paso a paso</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F7F5F0;
+  --paper: #FDFCF9;
+  --ink: #1A1814;
+  --ink2: #4A4640;
+  --ink3: #8A8480;
+  --accent: #D4622A;
+  --accent-light: #FAEEE7;
+  --accent-border: #F0C4AC;
+  --green: #2D7A4F;
+  --green-light: #E8F5EE;
+  --green-border: #A8D5B8;
+  --blue: #2563A8;
+  --blue-light: #EBF2FC;
+  --blue-border: #B8D0EE;
+  --border: #E8E4DC;
+  --shadow: rgba(26,24,20,0.06);
+  --font-head: 'Fraunces', serif;
+  --font-body: 'Instrument Sans', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* PROGRESS BAR */
+.progress-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.progress-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink3);
+  white-space: nowrap;
+  min-width: 90px;
+}
+.progress-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #E8853A);
+  border-radius: 100px;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+.progress-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 52px;
+  text-align: right;
+}
+
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+}
+
+/* HEADER */
+.header { margin-bottom: 48px; }
+.header-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.step-badge {
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 100px;
+}
+.header h1 {
+  font-family: var(--font-head);
+  font-size: clamp(30px, 5vw, 50px);
+  font-weight: 900;
+  line-height: 1.08;
+  color: var(--ink);
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.header h1 em { font-style: normal; color: var(--accent); }
+.header p {
+  font-size: 16px;
+  color: var(--ink2);
+  line-height: 1.7;
+  max-width: 560px;
+}
+.header-meta {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--ink3);
+}
+.meta-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+/* INTRO BOX — nuevo */
+.intro-box {
+  background: var(--blue-light);
+  border: 1px solid var(--blue-border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 40px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.intro-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.intro-box p { font-size: 14px; color: var(--blue); line-height: 1.65; }
+.intro-box strong { font-weight: 600; }
+
+/* SECTION */
+.section { margin-bottom: 40px; }
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--ink);
+}
+.section-num {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.section-info { flex: 1; }
+.section-info h2 {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.section-info p {
+  font-size: 14px;
+  color: var(--ink3);
+  line-height: 1.55;
+}
+
+/* CHECKLIST ITEM */
+.check-item {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.check-item.done {
+  border-color: var(--green-border);
+  background: var(--green-light);
+}
+.check-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+.checkbox {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0px;
+  transition: all 0.2s;
+  background: white;
+}
+.check-item.done .checkbox {
+  background: var(--green);
+  border-color: var(--green);
+}
+.checkmark {
+  display: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+.check-item.done .checkmark { display: block; }
+.check-item.done .check-num { display: none; }
+.check-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink3);
+}
+.check-main { flex: 1; }
+.check-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+.check-item.done .check-title {
+  text-decoration: line-through;
+  color: var(--ink3);
+}
+.check-subtitle {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.4;
+}
+.expand-hint {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 3px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  padding: 3px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.check-item.open .expand-hint { display: none; }
+.expand-btn {
+  font-size: 20px;
+  color: var(--ink3);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: transform 0.2s;
+  display: none;
+}
+.check-item.open .expand-btn { display: block; transform: rotate(180deg); }
+.check-item.open .expand-btn { display: block; }
+
+/* DETAIL PANEL */
+.check-detail {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 0 18px 20px;
+}
+.check-item.open .check-detail { display: block; }
+.check-item.done .check-detail { border-top-color: var(--green-border); }
+
+/* WHERE TAG — mejorado con visual */
+.detail-where {
+  margin-top: 18px;
+  margin-bottom: 16px;
+}
+.where-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+.where-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.where-step {
+  background: var(--ink);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 8px;
+}
+.where-arrow {
+  color: var(--ink3);
+  font-size: 14px;
+}
+
+.detail-body {
+  font-size: 14px;
+  color: var(--ink2);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+/* STEPS LIST — nuevo */
+.steps-list {
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.step-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.step-circle {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.step-text {
+  font-size: 14px;
+  color: var(--ink2);
+  line-height: 1.6;
+  padding-top: 2px;
+}
+.step-text strong { color: var(--ink); }
+
+/* COPY BOX */
+.copy-box {
+  background: #1A1814;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.copy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.copy-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+.copy-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(212,98,42,0.18);
+  border: 1px solid rgba(212,98,42,0.35);
+  padding: 5px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+.copy-btn:hover { background: rgba(212,98,42,0.28); }
+.copy-btn.copied { color: var(--green); background: rgba(45,122,79,0.18); border-color: rgba(45,122,79,0.35); }
+.copy-text {
+  padding: 16px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.75;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* VARIANTS */
+.variants-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+.variant-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.variant-tab {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+.variant-tab.active {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+
+/* TIP BOX */
+.tip-box {
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  padding: 13px 15px;
+  font-size: 13px;
+  color: #8B3A12;
+  line-height: 1.6;
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tip-icon { flex-shrink: 0; font-size: 15px; }
+
+/* WARN BOX — nuevo para errores comunes */
+.warn-box {
+  background: #FFF8E1;
+  border: 1px solid #F5D76E;
+  border-radius: 10px;
+  padding: 13px 15px;
+  font-size: 13px;
+  color: #7A5900;
+  line-height: 1.6;
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* COMPLETION BANNER */
+.complete-banner {
+  display: none;
+  background: var(--green);
+  border-radius: 18px;
+  padding: 32px;
+  text-align: center;
+  margin-top: 40px;
+  color: white;
+}
+.complete-banner.show { display: block; }
+.complete-banner h3 {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+.complete-banner p { font-size: 15px; opacity: 0.88; line-height: 1.65; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 40px 0; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .check-top { padding: 14px; }
+  .check-detail { padding: 0 14px 18px; }
+  .where-steps { gap: 4px; }
+  .where-step { font-size: 12px; padding: 4px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap">
+  <span class="progress-label">Tu progreso</span>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <span class="progress-count" id="progressCount">0 / 12</span>
+</div>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">
+      <span class="step-badge">Guía paso a paso</span>
+    </div>
+    <h1>Configura <em>Claude</em><br>sin saber de tecnología</h1>
+    <p>Toca cada paso para ver cómo hacerlo. Cuando termines, márcalo con ✓. Incluye textos listos para copiar — no tienes que inventar nada.</p>
+    <div class="header-meta">
+      <div class="meta-item"><div class="meta-dot"></div>12 pasos en total</div>
+      <div class="meta-item"><div class="meta-dot"></div>~20 minutos</div>
+      <div class="meta-item"><div class="meta-dot"></div>No necesitas experiencia</div>
+    </div>
+  </div>
+
+  <div class="intro-box">
+    <span class="intro-icon">👆</span>
+    <p><strong>¿Cómo usar este checklist?</strong> Toca cualquier paso para ver las instrucciones detalladas. Cuando lo hagas, toca el cuadradito de la izquierda para marcarlo como hecho. La barra de arriba muestra cuánto llevas.</p>
+  </div>
+
+  <!-- SECCIÓN 1 -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-info">
+        <h2>Crea tu cuenta</h2>
+        <p>Solo necesitas un correo. Sin tarjeta de crédito ni pagos.</p>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="0">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">1</span></div>
+        <div class="check-main">
+          <div class="check-title">Entra a claude.ai y crea tu cuenta</div>
+          <div class="check-subtitle">Puedes registrarte con Google — es el más fácil</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Por dónde entrar</div>
+          <div class="where-steps">
+            <span class="where-step">Abre tu navegador</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Escribe: claude.ai</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Toca "Sign up"</span>
+          </div>
+        </div>
+
+        <div class="steps-list">
+          <div class="step-row">
+            <div class="step-circle">1</div>
+            <div class="step-text">Abre Chrome, Safari o cualquier navegador de tu celular o computadora.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">2</div>
+            <div class="step-text">En la barra de arriba, escribe <strong>claude.ai</strong> y toca Enter.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">3</div>
+            <div class="step-text">Toca el botón que dice <strong>"Sign up"</strong> (en inglés, significa "Registrarse").</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">4</div>
+            <div class="step-text">Elige <strong>"Continue with Google"</strong> — solo pide que elijas tu cuenta de Gmail. Es la opción más rápida y no tienes que inventar una contraseña nueva.</div>
+          </div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">💡</span>
+          El plan gratuito funciona muy bien para empezar. No necesitas pagar nada todavía. Si más adelante quieres más, existe un plan Pro, pero por ahora no lo necesitas.
+        </div>
+        <div class="warn-box">
+          <span class="tip-icon">⚠️</span>
+          Si ves que la página está en inglés, no te preocupes. Una vez que entres, puedes escribirle a Claude en español y él te responderá en español.
+        </div>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="1">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">2</span></div>
+        <div class="check-main">
+          <div class="check-title">Descarga la app en tu celular</div>
+          <div class="check-subtitle">Disponible para iPhone y Android — gratis</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Dónde encontrarla</div>
+          <div class="where-steps">
+            <span class="where-step">App Store o Google Play</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Busca "Claude"</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Instalar (gratis)</span>
+          </div>
+        </div>
+
+        <div class="steps-list">
+          <div class="step-row">
+            <div class="step-circle">1</div>
+            <div class="step-text">Abre la tienda de apps de tu celular: <strong>App Store</strong> si tienes iPhone, o <strong>Google Play</strong> si tienes Android.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">2</div>
+            <div class="step-text">Busca <strong>"Claude"</strong>. La app tiene un ícono de color naranja con una C.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">3</div>
+            <div class="step-text">Toca <strong>Instalar</strong> o <strong>Obtener</strong>. Es completamente gratis.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">4</div>
+            <div class="step-text">Abre la app y entra con la misma cuenta Google que usaste antes.</div>
+          </div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">🎙️</span>
+          Con la app puedes hablarle de voz — muy útil cuando tienes las manos ocupadas o no quieres escribir. Solo toca el micrófono y habla normal.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN 2 -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-info">
+        <h2>Activa las funciones clave</h2>
+        <p>Están en Configuración (⚙️). Tardan 2 minutos en total.</p>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="2">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">3</span></div>
+        <div class="check-main">
+          <div class="check-title">Activa la Memoria</div>
+          <div class="check-subtitle">Para que Claude te recuerde entre conversaciones</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo llegar</div>
+          <div class="where-steps">
+            <span class="where-step">⚙️ Configuración</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Memory</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Activar el switch</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          Sin la memoria activada, Claude "olvida" todo al cerrar la conversación — como si fuera la primera vez que hablan cada día. Con la memoria activada, él va recordando cosas sobre ti poco a poco: tu nombre, tu trabajo, tus preferencias.
+        </div>
+
+        <div class="steps-list">
+          <div class="step-row">
+            <div class="step-circle">1</div>
+            <div class="step-text">En la web: busca el ícono de engranaje ⚙️ en la esquina inferior izquierda y tócalo.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">2</div>
+            <div class="step-text">En la app del celular: toca tu foto o inicial en la esquina superior derecha.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">3</div>
+            <div class="step-text">Busca la opción que dice <strong>"Memory"</strong> y activa el interruptor (que quede azul o verde).</div>
+          </div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">🧠</span>
+          Una vez activada, dile: <em>"Mi nombre es [tu nombre], soy [tu trabajo] y vivo en [tu ciudad]."</em> Él lo guardará para siempre.
+        </div>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="3">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">4</span></div>
+        <div class="check-main">
+          <div class="check-title">Activa la Búsqueda Web</div>
+          <div class="check-subtitle">Para que acceda a información actual de internet</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo llegar</div>
+          <div class="where-steps">
+            <span class="where-step">⚙️ Configuración</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Web Search</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Activar</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          Claude aprendió muchas cosas, pero hasta cierta fecha. Sin la búsqueda web, no sabe nada de lo que pasó después. Con ella activada, puede buscar precios actuales, noticias de hoy, el tipo de cambio y cualquier información reciente.
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">🌐</span>
+          Pruébala preguntando: <em>"¿Cuál es el tipo de cambio del dólar hoy?"</em> — verás que responde con el dato del día.
+        </div>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="4">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">5</span></div>
+        <div class="check-main">
+          <div class="check-title">Activa los Artefactos</div>
+          <div class="check-subtitle">Para que cree documentos, tablas y listas descargables</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo llegar</div>
+          <div class="where-steps">
+            <span class="where-step">⚙️ Configuración</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Feature Preview</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Artifacts → Activar</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          Sin los artefactos, Claude solo responde con texto en el chat. Con los artefactos activados, puede crear documentos reales que puedes descargar: tablas, listas de precios, calendarios, presupuestos.
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">📄</span>
+          Prueba pidiendo: <em>"Crea una tabla con mis 5 productos y sus precios"</em> — te dará un documento real, no solo texto en pantalla.
+        </div>
+        <div class="warn-box">
+          <span class="tip-icon">⚠️</span>
+          Si no encuentras "Feature Preview", intenta buscar "Artifacts" directamente. A veces cambia de lugar según la versión.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN 3 -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-info">
+        <h2>Dile cómo eres tú</h2>
+        <p>Esta es la configuración más importante. Solo tienes que copiar y pegar un texto.</p>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="5">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">6</span></div>
+        <div class="check-main">
+          <div class="check-title">Escribe tus preferencias personales</div>
+          <div class="check-subtitle">Para que siempre te hable como tú necesitas</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo llegar</div>
+          <div class="where-steps">
+            <span class="where-step">⚙️ Configuración</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">User Preferences</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Pega el texto</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          Esto es como presentarte con Claude. Le dices quién eres, qué haces y cómo quieres que te responda. Así no tienes que explicarlo cada vez. Elige el ejemplo que más se parezca a ti, copia el texto, cambia las partes en MAYÚSCULAS con tus datos reales y pégalo en la configuración.
+        </div>
+
+        <div class="variants-label">¿Cuál se parece más a ti?</div>
+        <div class="variant-tabs">
+          <button class="variant-tab active" onclick="switchVariant(this, 'pref', 0)">👨‍👩‍👧 Mamá / Papá</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'pref', 1)">🏪 Emprendedor/a</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'pref', 2)">👴 Persona mayor</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'pref', 3)">📚 Estudiante</button>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="copy-label">Copia esto → pega en Settings → User Preferences</span>
+            <button class="copy-btn" onclick="copyText(this, 'pref-text')">Copiar</button>
+          </div>
+          <div class="copy-text" id="pref-text"></div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">✏️</span>
+          Solo cambia las partes en MAYÚSCULAS con tu información real. Por ejemplo: donde dice TU NOMBRE escribe tu nombre de verdad. El resto déjalo igual.
+        </div>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="6">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">7</span></div>
+        <div class="check-main">
+          <div class="check-title">Enséñale cómo escribes tú (opcional)</div>
+          <div class="check-subtitle">Para que redacte mensajes con tu propio estilo</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo llegar</div>
+          <div class="where-steps">
+            <span class="where-step">⚙️ Configuración</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Style</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Create style</span>
+          </div>
+        </div>
+
+        <div class="steps-list">
+          <div class="step-row">
+            <div class="step-circle">1</div>
+            <div class="step-text">Busca 3 a 5 mensajes que hayas escrito tú — pueden ser mensajes de WhatsApp a clientes, publicaciones de Facebook, o correos.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">2</div>
+            <div class="step-text">Cópialos y pégalos en el chat, junto con la instrucción de abajo.</div>
+          </div>
+          <div class="step-row">
+            <div class="step-circle">3</div>
+            <div class="step-text">Claude analizará cómo escribes y desde ahí usará tu mismo estilo.</div>
+          </div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="copy-label">Instrucción para enseñarle tu estilo — copia y pega con tus mensajes</span>
+            <button class="copy-btn" onclick="copyText(this, 'style-text')">Copiar</button>
+          </div>
+          <div class="copy-text" id="style-text">Analiza estos textos que escribí yo y aprende cómo me expreso. Cuando me ayudes a redactar mensajes, publicaciones o correos, usa exactamente ese mismo tono y vocabulario. No uses palabras formales que yo no usaría. Si no estás seguro de algo, pregúntame antes de escribir.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN 4 -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-info">
+        <h2>Organiza con Proyectos</h2>
+        <p>Los Proyectos son como carpetas. Claude recuerda todo dentro de cada una.</p>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="7">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">8</span></div>
+        <div class="check-main">
+          <div class="check-title">Crea tu primer Proyecto</div>
+          <div class="check-subtitle">Elige el que más necesitas ahora</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo llegar</div>
+          <div class="where-steps">
+            <span class="where-step">Panel izquierdo</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Botón "+"</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">New Project</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          Imagina que tienes una libreta diferente para cada cosa importante de tu vida. En la del negocio vas guardando todo lo del negocio. En la de la familia, todo lo de la familia. Claude recuerda todo lo que le cuentes dentro de cada libreta, sin mezclar las cosas.
+        </div>
+
+        <div class="variants-label">¿Para qué quieres tu primer Proyecto?</div>
+        <div class="variant-tabs">
+          <button class="variant-tab active" onclick="switchVariant(this, 'proj', 0)">🏪 Mi negocio</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'proj', 1)">👨‍👩‍👧 Mi familia</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'proj', 2)">📖 Aprender algo</button>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="copy-label">Pega esto al abrir el Proyecto por primera vez</span>
+            <button class="copy-btn" onclick="copyText(this, 'proj-text')">Copiar</button>
+          </div>
+          <div class="copy-text" id="proj-text"></div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">📁</span>
+          Puedes crear cuantos Proyectos quieras. Empieza con uno, el más urgente, y después crea más.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN 5 -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-info">
+        <h2>Pídele bien las cosas</h2>
+        <p>Cuanto más le explicas, mejor te responde. Copia estos modelos y úsalos.</p>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="8">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">9</span></div>
+        <div class="check-main">
+          <div class="check-title">Prueba tu primer mensaje bien armado</div>
+          <div class="check-subtitle">Copia uno y mándalo ahora para ver la diferencia</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-body">
+          Un buen mensaje a Claude tiene 3 partes: <strong>quién eres</strong> + <strong>qué necesitas</strong> + <strong>cómo lo quieres</strong>. Es como hablarle a una persona: entre más contexto le das, mejor te ayuda.
+        </div>
+
+        <div class="variants-label">Elige tu situación:</div>
+        <div class="variant-tabs">
+          <button class="variant-tab active" onclick="switchVariant(this, 'prompt', 0)">💰 Cobrar a cliente</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'prompt', 1)">📱 Publicar en redes</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'prompt', 2)">📝 Ayuda con tarea</button>
+          <button class="variant-tab" onclick="switchVariant(this, 'prompt', 3)">📄 Entender documento</button>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="copy-label">Copia, cambia tus datos y manda en el chat de Claude</span>
+            <button class="copy-btn" onclick="copyText(this, 'prompt-text')">Copiar</button>
+          </div>
+          <div class="copy-text" id="prompt-text"></div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">🔁</span>
+          Si la respuesta no te gustó, escríbele: <em>"Hazlo más corto"</em>, <em>"Hazlo más amigable"</em>, o <em>"Dame otra versión"</em>. Siempre puedes pedir mejoras.
+        </div>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="9">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">10</span></div>
+        <div class="check-main">
+          <div class="check-title">Prueba subir una foto o documento</div>
+          <div class="check-subtitle">Claude puede leer y explicar cualquier cosa que le muestres</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo subir algo</div>
+          <div class="where-steps">
+            <span class="where-step">Ícono 📎 en el chat</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Elige tu foto o archivo</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Escribe tu pregunta</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          Puedes subir fotos de: recibos, cartas del banco, contratos, recetas escritas a mano, facturas, o cualquier documento. Claude lo lee y te explica qué dice en palabras simples.
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="copy-label">Mensaje para cuando subes una foto — copia y adapta</span>
+            <button class="copy-btn" onclick="copyText(this, 'photo-text')">Copiar</button>
+          </div>
+          <div class="copy-text" id="photo-text">Te estoy mandando una foto de [un recibo / una carta / un contrato]. Por favor léelo y explícame en palabras simples qué dice y si hay algo que deba tener en cuenta. Habla como si me explicaras a alguien que no sabe de estos temas.</div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">📸</span>
+          Funciona incluso con fotos tomadas con el celular. No importa si la foto no está perfecta, Claude puede leerla igual.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECCIÓN 6 -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div class="section-info">
+        <h2>Últimos ajustes</h2>
+        <p>Dos pasos finales para dejarlo completamente listo.</p>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="10">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">11</span></div>
+        <div class="check-main">
+          <div class="check-title">Conéctalo a Google Drive o Gmail (opcional)</div>
+          <div class="check-subtitle">Para que acceda a tus archivos y correos directamente</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-where">
+          <div class="where-label">📍 Cómo llegar</div>
+          <div class="where-steps">
+            <span class="where-step">⚙️ Configuración</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Integrations</span>
+            <span class="where-arrow">→</span>
+            <span class="where-step">Google → Conectar</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          Si conectas Google Drive, Claude puede leer tus documentos directamente sin que tengas que copiar y pegar el texto. Si conectas Gmail, puede ayudarte a redactar respuestas a correos reales. Tú siempre decides qué puede ver.
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">🔒</span>
+          Claude no guarda tus archivos ni comparte tu información. Solo lee lo que tú le muestras en el momento de la conversación. Es completamente seguro.
+        </div>
+      </div>
+    </div>
+
+    <div class="check-item" data-id="11">
+      <div class="check-top">
+        <div class="checkbox"><span class="checkmark">✓</span><span class="check-num">12</span></div>
+        <div class="check-main">
+          <div class="check-title">Haz tu primera conversación de prueba completa</div>
+          <div class="check-subtitle">Para confirmar que todo quedó bien configurado</div>
+        </div>
+        <span class="expand-hint">Ver cómo →</span>
+        <span class="expand-btn">▾</span>
+      </div>
+      <div class="check-detail">
+        <div class="detail-body">Empieza una conversación nueva y copia este mensaje. Claude usará todo lo que configuraste para responderte:</div>
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="copy-label">Mensaje de prueba final — copia y manda ahora</span>
+            <button class="copy-btn" onclick="copyText(this, 'test-text')">Copiar</button>
+          </div>
+          <div class="copy-text" id="test-text">Hola, soy [TU NOMBRE]. Quiero probar que todo está bien configurado. Por favor:
+1. Dime cómo me llamo y qué recuerdas de mí
+2. Dame 3 formas en que me puedes ayudar esta semana según lo que hago
+3. Escribe un ejemplo de mensaje que podría mandarle a un cliente o familiar mío
+
+Responde de forma simple y directa, como si hablaras con alguien que no sabe mucho de tecnología.</div>
+        </div>
+        <div class="tip-box">
+          <span class="tip-icon">🎉</span>
+          Si Claude responde mencionando tu nombre y te da ideas relacionadas a tu vida real, ¡la configuración está perfecta! Si algo falla, vuelve al paso correspondiente y revísalo.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="complete-banner" id="completeBanner">
+    <h3>🎉 ¡Lo lograste!</h3>
+    <p>Completaste los 12 pasos. Claude ya está configurado para ayudarte como un asistente personal todos los días. Comparte esta guía con alguien que la necesite.</p>
+  </div>
+
+</div>
+
+<script>
+const TOTAL = 12;
+
+const variants = {
+  pref: [
+    `Mi nombre es [TU NOMBRE]. Soy mamá/papá de [NÚMERO] hijos. Vivo en [TU CIUDAD]. Ayúdame siempre con un lenguaje simple y amigable. Cuando no entiendo algo, explícamelo con ejemplos del hogar o la vida diaria. Prefiero respuestas cortas. Si puedes hacer listas, hazlas con puntos simples. Mi mayor necesidad es ayuda con temas del hogar, la salud de mis hijos, las tareas del colegio y organizar mi tiempo.`,
+    `Mi nombre es [TU NOMBRE]. Tengo un negocio de [TIPO DE NEGOCIO] en [TU CIUDAD]. No tengo mucha experiencia con tecnología, así que explícame todo de forma simple. Necesito ayuda principalmente para: escribir mensajes a clientes, cobrar deudas sin conflictos, hacer publicaciones para redes sociales y organizar mis finanzas básicas. Usa lenguaje directo y dame siempre ejemplos prácticos que pueda usar de inmediato.`,
+    `Me llamo [TU NOMBRE] y tengo [TU EDAD] años. No soy experto en tecnología, así que habla conmigo de forma sencilla y paciente. Explica las cosas paso a paso. Si uso palabras que no son correctas, corrígeme con amabilidad. Necesito ayuda para entender documentos, escribir cartas o mensajes, y aprender cosas nuevas de forma tranquila.`,
+    `Soy estudiante de [CARRERA O NIVEL]. Me llamo [TU NOMBRE] y tengo [TU EDAD] años. Ayúdame a aprender explicándome las cosas con ejemplos reales y simples. Si tengo dudas, prefiero que me expliques paso a paso. También necesito ayuda para redactar trabajos, entender textos difíciles y organizar mi tiempo de estudio.`
+  ],
+  proj: [
+    `Este proyecto es sobre mi negocio. Te voy a dar la información más importante para que siempre la tengas presente:
+
+- Nombre del negocio: [NOMBRE]
+- Qué vendo o qué servicio doy: [DESCRIBE TU NEGOCIO]
+- Mis clientes principales son: [DESCRIBE A TUS CLIENTES]
+- Mi ciudad: [CIUDAD]
+- Mis precios aproximados: [PRECIOS O "te los daré después"]
+- Mi mayor problema ahora mismo es: [EJ: conseguir más clientes / cobrar / publicar en redes]
+
+Con esta información, ayúdame siempre pensando en lo que es mejor para mi negocio.`,
+    `Este proyecto es sobre mi familia. Aquí está la información que necesitas saber:
+
+- Mi nombre: [NOMBRE]
+- Mi pareja se llama: [NOMBRE o "no aplica"]
+- Mis hijos: [NOMBRES Y EDADES, ej: "María 8 años, José 5 años"]
+- Alergias o condiciones importantes: [O escribe "ninguna"]
+- Colegio de los niños: [NOMBRE o "no sé aún"]
+- Lo que más necesito es ayuda con: [EJ: tareas del colegio / salud / organización del hogar]`,
+    `Quiero aprender sobre [TEMA QUE QUIERES APRENDER]. No sé casi nada del tema todavía. Soy [TU TRABAJO O SITUACIÓN]. Quiero aprender de forma práctica, con ejemplos reales, no con definiciones aburridas.
+
+Cada vez que hablemos en este proyecto, recuerda dónde me quedé la última vez y continúa desde ahí. Empieza explicándome qué es [TEMA] en palabras simples, como si nunca lo hubiera escuchado.`
+  ],
+  prompt: [
+    `Soy [TU TRABAJO, ej: dueña de una tienda de ropa]. Tengo un cliente llamado [NOMBRE O "el cliente"] que me debe [MONTO O "dinero de la semana pasada"] y no me ha pagado. Ya le escribí una vez y no respondió.
+
+Por favor escríbeme 2 mensajes para cobrarle:
+1. Uno amigable y suave, como recordatorio
+2. Uno más firme si sigue sin pagar
+
+El mensaje debe sonar natural, no como plantilla de empresa. Que se note que lo escribí yo.`,
+    `Tengo un negocio de [TIPO DE NEGOCIO]. Quiero publicar en [Instagram / Facebook / TikTok] algo sobre [PRODUCTO O SERVICIO que quieres promocionar].
+
+Dame 3 opciones de publicación cortas (máximo 5 líneas cada una) que llamen la atención, sean honestas y suenen como una persona real, no como publicidad falsa.
+
+Incluye al final una frase que invite a la gente a escribirme o comprar.`,
+    `Mi hijo/a tiene [EDAD] años y tiene tarea de [MATERIA]. El tema es [TEMA ESPECÍFICO, ej: "las fracciones" o "la fotosíntesis"].
+
+Explícamelo a mí primero en palabras muy simples, como si yo tampoco supiera. Luego dame una forma fácil de explicárselo a mi hijo/a usando un ejemplo de la vida real, como algo de la cocina, el fútbol o los juguetes.`,
+    `Te voy a pegar un texto de [un contrato / una carta del banco / un recibo / un documento] que recibí y no entiendo bien.
+
+Por favor:
+1. Explícame en palabras simples qué dice
+2. Dime si hay algo importante que deba hacer o tener cuidado
+3. Si hay palabras difíciles, explícamelas
+
+Aquí está el texto: [PEGA EL TEXTO AQUÍ]`
+  ]
+};
+
+let variantIndex = { pref: 0, proj: 0, prompt: 0 };
+
+function switchVariant(btn, group, idx) {
+  variantIndex[group] = idx;
+  btn.closest('.check-detail').querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const el = document.getElementById(group + '-text');
+  if (el) el.textContent = variants[group][idx];
+}
+
+// Init texts
+document.getElementById('pref-text').textContent = variants.pref[0];
+document.getElementById('proj-text').textContent = variants.proj[0];
+document.getElementById('prompt-text').textContent = variants.prompt[0];
+
+function copyText(btn, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    btn.textContent = '¡Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // Fallback para navegadores sin clipboard API
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+    btn.textContent = '¡Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// Checklist logic
+const items = document.querySelectorAll('.check-item');
+let done = new Array(TOTAL).fill(false);
+
+function updateProgress() {
+  const count = done.filter(Boolean).length;
+  document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+  document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  if (count === TOTAL) {
+    document.getElementById('completeBanner').classList.add('show');
+    document.getElementById('completeBanner').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    document.getElementById('completeBanner').classList.remove('show');
+  }
+}
+
+items.forEach(item => {
+  const id = parseInt(item.dataset.id);
+  const top = item.querySelector('.check-top');
+
+  // Toca el checkbox → marca/desmarca
+  item.querySelector('.checkbox').addEventListener('click', (e) => {
+    e.stopPropagation();
+    done[id] = !done[id];
+    item.classList.toggle('done', done[id]);
+    updateProgress();
+  });
+
+  // Toca el resto → expande/colapsa
+  top.addEventListener('click', (e) => {
+    if (e.target.closest('.checkbox')) return;
+    item.classList.toggle('open');
+    // Auto-scroll suave para que se vea bien en móvil
+    if (item.classList.contains('open')) {
+      setTimeout(() => {
+        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  });
+});
+
+updateProgress();
+</script>
+</body>
+</html>
